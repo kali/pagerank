@@ -2,6 +2,7 @@ extern crate mmap;
 extern crate time;
 extern crate timely;
 extern crate getopts;
+extern crate pagerank;
 
 use timely::progress::timestamp::RootTimestamp;
 // use timely::progress::nested::Summary::Local;
@@ -11,11 +12,8 @@ use timely::dataflow::operators::*;
 use timely::dataflow::channels::pact::Exchange;
 use timely::drain::DrainExt;
 
-mod typedrw;
-mod graphmap;
-mod sorting;
-use graphmap::GraphMMap;
-use sorting::{SegmentList, radix_sort_32};
+use pagerank::graphmap::GraphMMap;
+use pagerank::sorting::{SegmentList, radix_sort_32};
 
 fn main () {
 

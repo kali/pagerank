@@ -1,6 +1,7 @@
 use std::mem;
 use timely::drain::DrainExt;
 
+#[derive(Debug)]
 pub struct SegmentList<T> {
     size:     usize,
     segments: Vec<Vec<T>>,

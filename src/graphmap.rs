@@ -1,13 +1,27 @@
 use typedrw::TypedMemoryMap;
 
+pub trait Graph {
+    fn nodes(&self) -> usize;
+    fn edges(&self, node: usize) -> &[u32];
+}
+
 pub struct GraphMMap {
     nodes: TypedMemoryMap<u64>,
     edges: TypedMemoryMap<u32>,
 }
 
 impl GraphMMap {
-    pub fn nodes(&self) -> usize { self.nodes[..].len() }
-    pub fn edges(&self, node: usize) -> &[u32] {
+    pub fn new(prefix: &str) -> GraphMMap {
+        GraphMMap {
+            nodes: TypedMemoryMap::new(format!("{}.offsets", prefix)),
+            edges: TypedMemoryMap::new(format!("{}.targets", prefix)),
+        }
+    }
+}
+
+impl Graph for GraphMMap {
+    fn nodes(&self) -> usize { self.nodes[..].len() }
+    fn edges(&self, node: usize) -> &[u32] {
         let nodes = &self.nodes[..];
         if node < nodes.len() {
             let start = if node==0 { 0 } else { nodes[node-1] } as usize;
@@ -16,11 +30,14 @@ impl GraphMMap {
         }
         else { &[] }
     }
-    pub fn new(prefix: &str) -> GraphMMap {
-        GraphMMap {
-            nodes: TypedMemoryMap::new(format!("{}.offsets", prefix)),
-            edges: TypedMemoryMap::new(format!("{}.targets", prefix)),
-        }
+}
+
+pub struct MemoryGraph(Vec<Vec<u32>>);
+
+impl Graph for MemoryGraph {
+    fn nodes(&self) -> usize { self.0.len() }
+    fn edges(&self, node: usize) -> &[u32] {
+        &*self.0[node]
     }
 }
 
